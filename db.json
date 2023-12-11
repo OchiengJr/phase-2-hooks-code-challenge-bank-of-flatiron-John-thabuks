@@ -111,6 +111,13 @@
       "category": "Purchase",
       "amount": "1500",
       "id": 16
+    },
+    {
+      "date": "2023-12-11",
+      "description": "Paying Moringa",
+      "category": "Fees",
+      "amount": "530",
+      "id": 17
     }
   ]
 }
