@@ -1,7 +1,17 @@
-import React from "react";
+// TransactionsList.js
+import React, { useEffect, useState } from "react";
 import Transaction from "./Transaction";
 
 function TransactionsList() {
+  const [userTransactions, setUserTransactions] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8001/transactions")
+      .then((resp) => resp.json())
+      .then((data) => setUserTransactions(data))
+      .catch((error) => console.error("Encountered an error while fetching data ", error))
+  }, [])
+
   return (
     <table className="ui celled striped padded table">
       <tbody>
@@ -19,7 +29,10 @@ function TransactionsList() {
             <h3 className="ui center aligned header">Amount</h3>
           </th>
         </tr>
-        {/* render a list of <Transaction> components here */}
+        {/* Fix: Add a return statement */}
+        {userTransactions.map((userTransaction) => (
+          <Transaction key={userTransaction.id} userTransaction={userTransaction} />
+        ))}
       </tbody>
     </table>
   );
