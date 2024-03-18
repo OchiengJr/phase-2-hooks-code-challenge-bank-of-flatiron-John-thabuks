@@ -9,6 +9,7 @@ const initialFormData = {
 
 function AddTransactionForm({ addTransaction }) {
   const [formData, setFormData] = useState(initialFormData);
+  const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,14 +18,17 @@ function AddTransactionForm({ addTransaction }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.date || !formData.description || !formData.category || !formData.amount) {
+      setError("All fields are required.");
+      return;
+    }
+
     const newTransaction = {
       date: formData.date,
       description: formData.description,
       category: formData.category,
       amount: parseFloat(formData.amount),
     };
-
-    addTransaction(newTransaction);
 
     try {
       const response = await fetch("http://localhost:8001/transactions", {
@@ -35,25 +39,33 @@ function AddTransactionForm({ addTransaction }) {
         body: JSON.stringify(newTransaction),
       });
 
+      if (!response.ok) {
+        throw new Error("Failed to add transaction.");
+      }
+
       const data = await response.json();
       console.log("Transaction posted successfully:", data);
+      addTransaction(newTransaction);
+      setError(null);
+      setFormData(initialFormData);
     } catch (error) {
       console.error("Error posting transaction:", error);
+      setError("An error occurred while adding the transaction. Please try again later.");
     }
-
-    setFormData(initialFormData);
   };
 
   return (
     <div className="ui segment">
       <form className="ui form" onSubmit={handleSubmit}>
         <div className="inline fields">
+          <label>Date:</label>
           <input
             type="date"
             name="date"
             value={formData.date}
             onChange={handleInputChange}
           />
+          <label>Description:</label>
           <input
             type="text"
             name="description"
@@ -61,6 +73,7 @@ function AddTransactionForm({ addTransaction }) {
             value={formData.description}
             onChange={handleInputChange}
           />
+          <label>Category:</label>
           <input
             type="text"
             name="category"
@@ -68,6 +81,7 @@ function AddTransactionForm({ addTransaction }) {
             value={formData.category}
             onChange={handleInputChange}
           />
+          <label>Amount:</label>
           <input
             type="number"
             name="amount"
@@ -77,6 +91,7 @@ function AddTransactionForm({ addTransaction }) {
             onChange={handleInputChange}
           />
         </div>
+        {error && <div className="ui red message">{error}</div>}
         <button className="ui button" type="submit">
           Add Transaction
         </button>

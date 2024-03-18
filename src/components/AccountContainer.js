@@ -13,21 +13,19 @@ function AccountContainer() {
     const fetchData = async () => {
       try {
         const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error("Failed to fetch transactions");
+        }
         const data = await response.json();
         setTransactions(data);
         setFilteredTransactions(data);
       } catch (error) {
-        console.error("Error fetching transactions:", error);
+        console.error(error.message);
       }
     };
 
     fetchData();
   }, []);
-
-  const updateTransactions = (newTransaction) => {
-    setTransactions((prevTransactions) => [...prevTransactions, newTransaction]);
-    setFilteredTransactions((prevTransactions) => [...prevTransactions, newTransaction]);
-  };
 
   const handleSearch = (term) => {
     const filtered = transactions.filter((transaction) =>
@@ -37,17 +35,19 @@ function AccountContainer() {
   };
 
   const handleDelete = async (id) => {
-    const updatedTransactions = transactions.filter((transaction) => transaction.id !== id);
-    setTransactions(updatedTransactions);
-    setFilteredTransactions(updatedTransactions);
-
     try {
-      await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
       });
+      if (!response.ok) {
+        throw new Error("Failed to delete transaction");
+      }
+      const updatedTransactions = transactions.filter((transaction) => transaction.id !== id);
+      setTransactions(updatedTransactions);
+      setFilteredTransactions(updatedTransactions);
       console.log("Transaction deleted successfully");
     } catch (error) {
-      console.error("Error deleting transaction:", error);
+      console.error(error.message);
     }
   };
 
@@ -63,7 +63,7 @@ function AccountContainer() {
   return (
     <div>
       <Search onSearch={handleSearch} />
-      <AddTransactionForm transactions={transactions} addTransaction={updateTransactions} />
+      <AddTransactionForm transactions={transactions} setTransactions={setTransactions} />
       <TransactionsList transactions={filteredTransactions} onDelete={handleDelete} onSort={handleSort} />
     </div>
   );

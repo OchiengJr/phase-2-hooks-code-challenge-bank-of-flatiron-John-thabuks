@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
-function Search( {onSearch} ) {
-
+function Search({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleInputChange = (e) => {
@@ -10,7 +9,12 @@ function Search( {onSearch} ) {
 
     // Pass the search term to the parent component (AccountContainer)
     onSearch(term);
-  }
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    onSearch(""); // Clear the search term in the parent component
+  };
 
   return (
     <div className="ui large fluid icon input">
@@ -19,8 +23,18 @@ function Search( {onSearch} ) {
         placeholder="Search your Recent Transactions"
         value={searchTerm}
         onChange={handleInputChange}
+        aria-label="Search transactions"
       />
       <i className="circular search link icon"></i>
+      {searchTerm && (
+        <button
+          className="ui icon button"
+          onClick={handleClearSearch}
+          aria-label="Clear search"
+        >
+          <i className="close icon"></i>
+        </button>
+      )}
     </div>
   );
 }

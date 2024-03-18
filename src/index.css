@@ -4,9 +4,8 @@
 }
 
 input {
-  width: 25% !important;
-  margin-right: 0.25em!important;
-  margin-left: 0.25em!important;
+  width: 25%;
+  margin: 0.25em; /* Consolidated margin property */
 }
 
 body {
@@ -19,9 +18,9 @@ body {
   text-align: center;
 }
 
-
 .App-header {
   background-color: #222;
   padding: 20px;
   color: white;
 }
+
